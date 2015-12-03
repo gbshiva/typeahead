@@ -1,169 +1,95 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Type Ahead Sample</title>
-    <style type="text/css"><![CDATA[
-        #connect-container {
-            float: left;
-            width: 400px
-        }
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="icon" href="../../favicon.ico">
 
-        #connect-container div {
-            padding: 5px;
-        }
+<title>Search with BigMemory</title>
 
-        #console-container {
-            float: left;
-            margin-left: 15px;
-            width: 400px;
-        }
+<!-- Bootstrap core CSS -->
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<!-- Bootstrap theme -->
+<link href="css/bootstrap-theme.min.css" rel="stylesheet">
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<link href="css/ie10-viewport-bug-workaround.css" rel="stylesheet">
 
-        #console {
-            border: 1px solid #CCCCCC;
-            border-right-color: #999999;
-            border-bottom-color: #999999;
-            height: 170px;
-            overflow-y: scroll;
-            padding: 5px;
-            width: 100%;
-        }
+<!-- Custom styles for this template -->
+<link href="css/theme.css" rel="stylesheet">
 
-        #console p {
-            padding: 0;
-            margin: 0;
-        }
-    ]]></style>
-    <script type="application/javascript"><![CDATA[
-        "use strict";
+<link rel="stylesheet"
+	href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 
-        var ws = null;
-
-        function setConnected(connected) {
-            document.getElementById('connect').disabled = connected;
-            document.getElementById('disconnect').disabled = !connected;
-            document.getElementById('echo').disabled = !connected;
-        }
-
-        function connect() {
-            var target = document.getElementById('target').value;
-            if (target == '') {
-                alert('Please select server side connection implementation.');
-                return;
-            }
-            if ('WebSocket' in window) {
-                ws = new WebSocket(target);
-            } else if ('MozWebSocket' in window) {
-                ws = new MozWebSocket(target);
-            } else {
-                alert('WebSocket is not supported by this browser.');
-                return;
-            }
-            ws.onopen = function () {
-                setConnected(true);
-                log('Info: WebSocket connection opened.');
-            };
-            ws.onmessage = function (event) {
-                log('Received: ' + event.data);
-            };
-            ws.onclose = function (event) {
-                setConnected(false);
-                log('Info: WebSocket connection closed, Code: ' + event.code + (event.reason == "" ? "" : ", Reason: " + event.reason));
-            };
-        }
-
-        function disconnect() {
-            if (ws != null) {
-                ws.close();
-                ws = null;
-            }
-            setConnected(false);
-        }
-
-        function echo() {
-            if (ws != null) {
-                var message = document.getElementById('message').value;
-                log('Sent: ' + message);
-                ws.send(message);
-            } else {
-                alert('WebSocket connection not established, please connect.');
-            }
-        }
-
-        function updateTarget(target) {
-            if (window.location.protocol == 'http:') {
-                document.getElementById('target').value = 'ws://' + window.location.host + target;
-            } else {
-                document.getElementById('target').value = 'wss://' + window.location.host + target;
-            }
-        }
-
-        function log(message) {
-            var console = document.getElementById('console');
-            var p = document.createElement('p');
-            p.style.wordWrap = 'break-word';
-            p.appendChild(document.createTextNode(message));
-            console.appendChild(p);
-            while (console.childNodes.length > 25) {
-                console.removeChild(console.firstChild);
-            }
-            console.scrollTop = console.scrollHeight;
-        }
+<!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+<!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+<script src="js/ie-emulation-modes-warning.js"></script>
 
 
-        document.addEventListener("DOMContentLoaded", function() {
-            // Remove elements with "noscript" class - <noscript> is not allowed in XHTML
-            var noscripts = document.getElementsByClassName("noscript");
-            for (var i = 0; i < noscripts.length; i++) {
-                noscripts[i].parentNode.removeChild(noscripts[i]);
-            }
-        }, false);
-    ]]></script>
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+<style>
+.ui-autocomplete-loading {
+	background: white right center
+		no-repeat;
+}
+
+#city {
+	width: 25em;
+}
+</style>
+
 </head>
+
 <body>
-<div class="noscript"><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websockets rely on Javascript being enabled. Please enable
-    Javascript and reload this page!</h2></div>
-<div>
-    <div id="connect-container">
-        <div>
-            <span>Connect to service implemented using:</span>
-            <br/>
-            <!-- echo example using new programmatic API on the server side -->
-            <input id="radio1" type="radio" name="group1" value="/examples/websocket/echoProgrammatic"
-                   onclick="updateTarget(this.value);"/> <label for="radio1">programmatic API</label>
-            <br/>
-            <!-- echo example using new annotation API on the server side -->
-            <input id="radio2" type="radio" name="group1" value="/examples/websocket/echoAnnotation"
-                   onclick="updateTarget(this.value);"/> <label for="radio2">annotation API (basic)</label>
-            <br/>
-            <!-- echo example using new annotation API on the server side -->
-            <input id="radio3" type="radio" name="group1" value="/examples/websocket/echoStreamAnnotation"
-                   onclick="updateTarget(this.value);"/> <label for="radio3">annotation API (stream)</label>
-            <br/>
-            <!-- echo example using new annotation API on the server side -->
-            <!-- Disabled by default -->
-            <!--
-            <input id="radio4" type="radio" name="group1" value="/examples/websocket/echoAsyncAnnotation"
-                   onclick="updateTarget(this.value);"/> <label for="radio4">annotation API (async)</label>
-            -->
-        </div>
-        <div>
-            <input id="target" type="text" size="40" style="width: 350px"/>
-        </div>
-        <div>
-            <button id="connect" onclick="connect();">Connect</button>
-            <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
-        </div>
-        <div>
-            <textarea id="message" style="width: 350px">Here is a message!</textarea>
-        </div>
-        <div>
-            <button id="echo" onclick="echo();" disabled="disabled">Echo message</button>
-        </div>
-    </div>
-    <div id="console-container">
-        <div id="console"/>
-    </div>
-</div>
+	<div class="row">
+		<div class="col-md-12 animate0 bounceIn text-center ">
+			<img src="img/sag.png">
+			<div>
+				<h1>Search</h1>
+			</div>
+		</div>
+	</div>
+
+
+
+	<div class="ui-widget">
+		<label for="city">Your city: </label> <input id="city">
+
+	</div>
+
+	<div class="ui-widget" style="margin-top: 2em; font-family: Arial">
+		Result:
+		<div id="log" style="height: 200px; width: 300px; overflow: auto;"
+			class="ui-widget-content"></div>
+	</div>
+
+
+
+
+
+
+
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')</script>
+	<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/docs.min.js"></script>
+	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+	<script src="js/ie10-viewport-bug-workaround.js"></script>
+	<script src="js/typeahead.js" ><</script>
 </body>
 </html>

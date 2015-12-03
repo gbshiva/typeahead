@@ -1,0 +1,30 @@
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="ehcache.xsd" updateCheck="false"
+	monitoring="autodetect" dynamicConfig="true" name="GE Analytics">
+	<diskStore path="/tmp/ehcache" />
+
+	<defaultCache maxElementsInMemory="10000" eternal="false"
+		timeToIdleSeconds="120" timeToLiveSeconds="120" overflowToDisk="false"
+		diskSpoolBufferSizeMB="30" maxElementsOnDisk="10000000"
+		diskPersistent="false" diskExpiryThreadIntervalSeconds="120"
+		memoryStoreEvictionPolicy="LRU" statistics="true"/>
+
+	<cache name="hccache" maxEntriesLocalHeap="1000"  statistics="false" eternal="false" maxBytesLocalOffHeap="250M"
+		   memoryStoreEvictionPolicy="LRU" OverflowToOffHeap="false" OverflowToDisk="false">
+		<searchable keys="false" values="false">
+			<searchAttribute name="name" expression="value.getDisplayName()" />
+			<searchAttribute name="address" expression="value.getAddress1()" />
+			<searchAttribute name="city" expression="value.getCity()" />
+			<searchAttribute name="state" expression="value.getState()"/>
+			<searchAttribute name="zipcode" expression="value.getZipcode()"/>
+			<searchAttribute name="speciality" expression="value.getPrimarySpeciality()"/>
+		</searchable>
+		<terracotta/>
+	</cache>
+
+	<terracottaConfig url="localhost:9510,localhost:9511"
+		rejoin="true" />
+
+	<managementRESTService enabled="true" />
+
+</ehcache>

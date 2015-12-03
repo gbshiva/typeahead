@@ -1,0 +1,59 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
+         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+         http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
+
+    <import resource="classpath:META-INF/cxf/cxf.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml"/>
+
+<!-- 
+    <context:property-placeholder location="classpath:app.properties"
+                                  system-properties-mode="OVERRIDE"/>
+                                  -->
+    <context:annotation-config/>
+
+    <bean id="abstractLoggingInterceptor" abstract="true">
+        <property name="prettyLogging" value="true"/>
+    </bean>
+    <bean id="loggingInInterceptor" class="org.apache.cxf.interceptor.LoggingInInterceptor"
+          parent="abstractLoggingInterceptor"/>
+    <bean id="loggingOutInterceptor" class="org.apache.cxf.interceptor.LoggingOutInterceptor"
+          parent="abstractLoggingInterceptor"/>
+
+    <bean id="cacheAsServiceBean" class="com.sag.bigmemory.InMemorySearchService">
+    </bean>
+
+    <jaxrs:server address="/services">
+        <jaxrs:serviceBeans>
+            <ref bean="cacheAsServiceBean"/>
+        </jaxrs:serviceBeans>
+        <jaxrs:providers>
+            <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
+        </jaxrs:providers>
+        <jaxrs:properties>
+            <entry key="faultStackTraceEnabled" value="true"/>
+            <entry key="exceptionMessageCauseEnabled" value="true"/>
+        </jaxrs:properties>
+        <jaxrs:inInterceptors>
+            <ref bean="loggingInInterceptor"/>
+        </jaxrs:inInterceptors>
+        <jaxrs:outInterceptors>
+            <ref bean="loggingOutInterceptor"/>
+        </jaxrs:outInterceptors>
+        <jaxrs:outFaultInterceptors>
+            <ref bean="loggingOutInterceptor"/>
+        </jaxrs:outFaultInterceptors>
+        <jaxrs:inFaultInterceptors>
+            <ref bean="loggingInInterceptor"/>
+        </jaxrs:inFaultInterceptors>
+    </jaxrs:server>
+
+
+</beans>
