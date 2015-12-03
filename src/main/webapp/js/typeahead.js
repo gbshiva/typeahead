@@ -4,11 +4,12 @@
 $(function() {
 
 function log( message ) {
+	  alert(message)
       $( "<div>" ).text( message ).prependTo( "#log" );
       $( "#log" ).scrollTop( 0 );
     }
  
-    $( "#city" ).autocomplete({
+    $( "#name" ).autocomplete({
       source: function( request, response ) {
     	  var param = 'pattern='+request;  
         $.ajax({
@@ -39,5 +40,33 @@ function log( message ) {
         $( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
       }
     });
+
+    function gridinit() {
+		
+        $("#jqGrid").jqGrid({
+			
+            colModel: [
+                { label: 'OrderID', name: 'OrderID', key: true, width: 75 },
+                { label: 'Customer ID', name: 'CustomerID', width: 150 },
+                { label: 'Order Date', name: 'OrderDate', width: 150 },
+                { label: 'Freight', name: 'Freight', width: 150 },
+                { label:'Ship Name', name: 'ShipName', width: 150 }
+            ],
+			viewrecords: true,
+            pager: "#jqGridPager"
+        });
+    }
+       
+       gridinit();
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
 });
  

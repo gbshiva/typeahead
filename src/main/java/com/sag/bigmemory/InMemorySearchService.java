@@ -73,6 +73,29 @@ public class InMemorySearchService {
     	
     }
     
+    
+    @GET
+    @Path("/searchHCO")
+    public String getHCPNames(@QueryParam("name") String name, @QueryParam("speciality") String speciality, @QueryParam("address") String address, @QueryParam("city") String city, @QueryParam("state") String state, @QueryParam("zip") String zip)  throws Exception {
+    	String cacheName="hccache";
+    	Cache cache = cacheManager.getCache(cacheName);
+    	if (cache == null){
+    		LOG.error("Unable to get create cache " + cacheName);
+    		return "{\"Result\":\"Error Creating cache }"+cacheName+ "\"";
+    	}
+    	HCOHCPService aservice = new HCOHCPService(cache);
+    	return mapper.writeValueAsString(aservice.searchHCP(name,speciality,address,city,state,zip));
+    	
+    	
+    }
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * JSON data is stored within the provided cache. If 'id' attribute is present, that is recognized as the key - update existing object
      * Otherwise, it will be a new object.

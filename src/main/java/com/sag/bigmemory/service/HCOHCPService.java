@@ -1,4 +1,5 @@
 package com.sag.bigmemory.service;
+
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 
@@ -32,96 +33,161 @@ import org.slf4j.LoggerFactory;
 public class HCOHCPService {
 	private static Logger LOG = LoggerFactory.getLogger(HCOHCPService.class);
 	private Cache hccache;
-	public HCOHCPService(Cache c){
+
+	public HCOHCPService(Cache c) {
 		this.hccache = c;
 	}
-	
-	
-	public int load(String filename){
+
+	public int load(String filename) {
 		int count = 0;
-		
+
 		try {
-			
+
 			InputStream is = getClass().getClassLoader().getResourceAsStream(filename);
-			if (is == null){
+			if (is == null) {
 				LOG.error("Unable to find file");
 				return count;
 			}
-			
-			
+
 			InputStreamReader ins = new InputStreamReader(is);
-				
-			BufferedReader in = new BufferedReader( ins);
-			
-			
+
+			BufferedReader in = new BufferedReader(ins);
+
 			if (in == null) {
-				LOG.error("Unable to load data file "+filename );
+				LOG.error("Unable to load data file " + filename);
 				return count;
 			}
 			String line = null;
-		
-			
+
 			while ((line = in.readLine()) != null) {
 				String fields[] = line.split(",");
-				if (fields.length > 26){
-					hcohcp a = new hcohcp(fields[2],fields[3],fields[4],fields[6],fields[8],fields[17],fields[21],fields[22],fields[24],fields[25],fields[26]);
-				Element data = new Element(fields[2], a);
-				count++;
-				hccache.put(data);
+				if (fields.length > 26) {
+					hcohcp a = new hcohcp(fields[2], fields[3], fields[4], fields[6], fields[8], fields[17], fields[21],
+							fields[22], fields[24], fields[25], fields[26]);
+					Element data = new Element(fields[2], a);
+					count++;
+					hccache.put(data);
 				}
-				
+
 			}
-			LOG.info("Completed loading data from file " + filename + "to Cache " + hccache.getName() +" Loaded "+count +" elements");
-			
+			LOG.info("Completed loading data from file " + filename + "to Cache " + hccache.getName() + " Loaded "
+					+ count + " elements");
+
 			in.close();
-			
+
 		} catch (Exception ex) {
-			LOG.error("Execption processing",ex);
+			LOG.error("Execption processing", ex);
 			ex.printStackTrace();
 		}
 		return count;
 	}
 
-	public String[] getHCPNames(String pattern){
-		
+	public String[] getHCPNames(String pattern) {
+
 		String[] names = new String[10];
 		Attribute<String> name = hccache.getSearchAttribute("name");
 
 		QueryManager queryManager = QueryManagerBuilder.newQueryManagerBuilder().addCache(hccache).build();
 
-		Query assetQuery = queryManager.createQuery(
-				"select name from hccache where ( name like '"+pattern+"%') limit 10");
-		
+		Query assetQuery = queryManager
+				.createQuery("select name from hccache where ( name like '" + pattern + "%') limit 10");
+
 		Results results = assetQuery.end().execute();
-		 int i=0;
+		int i = 0;
 		for (Result result : results.all()) {
-	
-			names[i]=(String)result.getAttribute(name);
+
+			names[i] = (String) result.getAttribute(name);
 			i++;
-			
+
 		}
-		
+		results.discard();
 		return names;
-		
+
 	}
-	
-	
-	private static int getCounts(Query query, int cardinality){
-		Results assetResults = query.execute();
-		int totalcount=0;
-		for (Result result : assetResults.all()) {
-			//System.out.println(result);
-			Iterator val = result.getAggregatorResults().iterator();
-			while ( val.hasNext()){
-				int count = (Integer)val.next();
-				if (count == cardinality)
-					totalcount++;
+
+	public List searchHCP(String name, String speciality, String address, String city, String state, String zip) {
+
+		List data = new ArrayList();
+		QueryManager queryManager = QueryManagerBuilder.newQueryManagerBuilder().addCache(hccache).build();
+
+		String query = "select value from hccache ";
+		boolean first = true;
+
+		if (name != null) {
+			if (first) {
+				query += "where ( ";
+				first = false;
+				query += "( name like '" + name + "%')";
+			} else {
+				query += " and ( name like '" + name + "%')";
 			}
 		}
-		assetResults.discard();
-		return totalcount;
-		
-		
+
+		if (address != null) {
+			if (first) {
+				query += "where ( ";
+				first = false;
+				query += "( address like '" + address + "%')";
+			} else {
+				query += " and ( address like '" + address + "%')";
+			}
+		}
+
+		if (state != null) {
+			if (first) {
+				query += "where (";
+				first = false;
+				query += "( state = '" + state + "')";
+			} else {
+				query += " and ( state = '" + state + "')";
+			}
+		}
+
+		if (zip != null) {
+			if (first) {
+				query += "where (";
+				first = false;
+				query += "( zip = '" + zip + "')";
+			} else {
+				query += " and ( zip = '" + zip + "')";
+			}
+		}
+
+		if (city != null) {
+			if (first) {
+				query += "where ( ";
+				first = false;
+				query += "( city = '" + city + "')";
+			} else {
+				query += " and ( city = '" + city + "')";
+			}
+		}
+
+		if (speciality != null) {
+			if (first) {
+				query += "where ( ";
+				first = false;
+				query += "( speciality = '" + speciality + "')";
+			} else {
+				query += " and ( speciality = '" + speciality + "')";
+			}
+		}
+
+		if (first)
+			query += " limit 30";
+		else
+			query += " ) limit 30";
+			
+		Query hcoQuery = queryManager.createQuery(query);
+		Results results = hcoQuery.end().execute();
+	
+		for (Result result : results.all()) {
+			data.add( (hcohcp) result.getValue());
+
+		}
+
+		return data;
+
 	}
 
 }

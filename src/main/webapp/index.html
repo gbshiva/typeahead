@@ -24,6 +24,9 @@
 <link rel="stylesheet"
 	href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 
+
+<link rel="stylesheet" type="text/css" media="screen" href="css/ui.jqgrid.css" />
+
 <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
 <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
 <script src="js/ie-emulation-modes-warning.js"></script>
@@ -35,61 +38,124 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-
-<style>
-.ui-autocomplete-loading {
-	background: white right center
-		no-repeat;
-}
-
-#city {
-	width: 25em;
-}
-</style>
-
 </head>
 
 <body>
-	<div class="row">
-		<div class="col-md-12 animate0 bounceIn text-center ">
-			<img src="img/sag.png">
-			<div>
-				<h1>Search</h1>
+	<div class="container">
+		<div class="image">
+			<div class="text-center">
+				<img src="img/sag.png">
+				<div>
+					<h2>Genetech - Health Care Search</h2>
+				</div>
 			</div>
 		</div>
+
+		<div class="panel panel-default">
+			<div class="panel-heading">Select Search Criteria:</div>
+			<div class="panel-body">
+
+
+				<div class="row">
+					<div class="col-sm-3">
+						<label for="name">HCP/HCO Name:</label> <input
+							class="form-control" id="name">
+					</div>
+
+
+					<div class="col-sm-3">
+						<label for="speciality">Speciality:</label> <input
+							class="form-control" id="speciality">
+					</div>
+
+
+
+					<div class="col-sm-4">
+						<label for="address">Address:</label> <input class="form-control"
+							id="address" placeholder="">
+					</div>
+
+				</div>
+				<br>
+				<div class="row">
+
+					<div class="col-sm-3">
+						<label for="city">City:</label> <input class="form-control"
+							id="city" placeholder="">
+					</div>
+
+					<div class="col-sm-3">
+						<label for="State">State:</label> <input class="form-control"
+							id="state" placeholder="">
+					</div>
+
+					<div class="col-sm-2">
+						<label for="zipcode">Zipcode:</label> <input class="form-control"
+							id="zipcode" placeholder="">
+					</div>
+				</div>
+
+				<br>
+				<div class="row">
+					<div class="col-sm-2">
+
+						<button id="search" type="button" class="btn btn-info ">SEARCH</button>
+					</div>
+				</div>
+
+			</div>
+
+
+
+
+		</div>
+		<div>
+			<table id="jqGrid"></table>
+			<div id="jqGridPager"></div>
+		</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	</div>
-
-
-
-	<div class="ui-widget">
-		<label for="city">Your city: </label> <input id="city">
-
-	</div>
-
-	<div class="ui-widget" style="margin-top: 2em; font-family: Arial">
-		Result:
-		<div id="log" style="height: 200px; width: 300px; overflow: auto;"
-			class="ui-widget-content"></div>
-	</div>
-
-
-
-
-
-
-
 	<!-- Bootstrap core JavaScript
     ================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
 	<script
 		src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-	<script>window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')</script>
+	<script>
+		window.jQuery
+				|| document.write('<script src="js/jquery.min.js"><\/script>')
+	</script>
 	<script src="//code.jquery.com/jquery-1.10.2.js"></script>
 	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/docs.min.js"></script>
 	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 	<script src="js/ie10-viewport-bug-workaround.js"></script>
-	<script src="js/typeahead.js" ><</script>
+	<script src="js/typeahead.js"> </script>
+	<script src="http://code.jquery.com/jquery-migrate-1.0.0.js"></script>
+	<!-- The jqGrid language file code-->
+	<script type="text/javascript" src="js/grid.locale-en.js"></script>
+	<!-- The atual jqGrid code -->
+	<script type="text/javascript" src="js/jquery.jqGrid.min.js"></script>
+	
+
+	
+
 </body>
 </html>
