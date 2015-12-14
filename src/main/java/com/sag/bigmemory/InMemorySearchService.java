@@ -9,6 +9,7 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -37,10 +38,30 @@ import org.terracotta.toolkit.concurrent.atomic.ToolkitAtomicLong;
 
 import com.sag.bigmemory.domain.cacheKeyValue;
 import com.sag.bigmemory.service.HCOHCPService;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.core.MultivaluedMap;
+
 
 /**
  * Cache as a resource
- */
+
+
+*@CrossOriginResourceSharing(
+ *       allowOrigins = true, 
+  *      allowCredentials = true, 
+   *     maxAge = 1 
+        
+*)
+*/
+
+
+
+
+
+
+
 @Path("/bigmemory/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -73,10 +94,15 @@ public class InMemorySearchService {
     	
     }
     
-    
+    @GET
+    @Path("/searchHCO1")
+    public String searchHCPNames1(@QueryParam("name") String name, @QueryParam("speciality") String speciality, @QueryParam("address") String address, @QueryParam("city") String city, @QueryParam("state") String state, @QueryParam("zip") String zip)  throws Exception {
+    	return "[{\"professionalEnrollmentID\":\"I20110506000477\",\"displayName\":\"MARGOLIES RICHARD \",\"primarySpeciality\":\"\",\"organization\":\"RICHARD P MARGOLIES PA\",\"address1\":\"3355 BURNS RD\",\"city\":\"PALM BEACH GARDENS\",\"state\":\"FL\",\"zipcode\":\"334104356\"}]";
+
+    }
     @GET
     @Path("/searchHCO")
-    public String getHCPNames(@QueryParam("name") String name, @QueryParam("speciality") String speciality, @QueryParam("address") String address, @QueryParam("city") String city, @QueryParam("state") String state, @QueryParam("zip") String zip)  throws Exception {
+    public String searchHCPNames(@QueryParam("name") String name, @QueryParam("speciality") String speciality, @QueryParam("address") String address, @QueryParam("city") String city, @QueryParam("state") String state, @QueryParam("zip") String zip)  throws Exception {
     	String cacheName="hccache";
     	Cache cache = cacheManager.getCache(cacheName);
     	if (cache == null){
@@ -281,6 +307,18 @@ public class InMemorySearchService {
         return ehCache;
     }
     
+    
+    @OPTIONS
+    @Path("{path : .*}")
+    public Response options() {
+        return Response.ok("")
+                .header("Access-Control-Allow-Origin", "*")
+                .header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")
+                .header("Access-Control-Allow-Credentials", "true")
+                .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD")
+                .header("Access-Control-Max-Age", "1209600")
+                .build();
+    }
     
     
 }

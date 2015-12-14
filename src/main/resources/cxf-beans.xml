@@ -29,7 +29,6 @@
 
     <bean id="cacheAsServiceBean" class="com.sag.bigmemory.InMemorySearchService">
     </bean>
-
     <jaxrs:server address="/services">
         <jaxrs:serviceBeans>
             <ref bean="cacheAsServiceBean"/>

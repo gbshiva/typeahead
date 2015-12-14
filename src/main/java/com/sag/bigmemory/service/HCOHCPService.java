@@ -123,7 +123,7 @@ public class HCOHCPService {
 			}
 		}
 
-		if (address != null) {
+		if (   (address!= null)  && ( address.length() > 0)){
 			if (first) {
 				query += "where ( ";
 				first = false;
@@ -133,7 +133,7 @@ public class HCOHCPService {
 			}
 		}
 
-		if (state != null) {
+		if  (   (state!= null)  && ( state.length() > 0))  {
 			if (first) {
 				query += "where (";
 				first = false;
@@ -143,7 +143,7 @@ public class HCOHCPService {
 			}
 		}
 
-		if (zip != null) {
+		if  (   (zip!= null)  && ( zip.length() > 0)) {
 			if (first) {
 				query += "where (";
 				first = false;
@@ -153,7 +153,7 @@ public class HCOHCPService {
 			}
 		}
 
-		if (city != null) {
+		if  (   (city!= null)  && ( city.length() > 0)) {
 			if (first) {
 				query += "where ( ";
 				first = false;
@@ -163,7 +163,7 @@ public class HCOHCPService {
 			}
 		}
 
-		if (speciality != null) {
+		if  (   (speciality!= null)  && ( speciality.length() > 0)) {
 			if (first) {
 				query += "where ( ";
 				first = false;
@@ -178,12 +178,16 @@ public class HCOHCPService {
 		else
 			query += " ) limit 30";
 			
+		
+		LOG.info("Executing BigMemory Query = " + query);
+		
 		Query hcoQuery = queryManager.createQuery(query);
 		Results results = hcoQuery.end().execute();
 	
 		for (Result result : results.all()) {
-			data.add( (hcohcp) result.getValue());
-
+			hcohcp hs = (hcohcp) result.getValue();
+			JSONHCOHCP dhs = new JSONHCOHCP(hs.getProfessionalEnrollmentID(), hs.getDisplayName(), hs.getPrimarySpeciality(), hs.getOrganization(), hs.getAddress1(), hs.getCity(), hs.getState(), hs.getZipcode());
+			data.add(dhs);
 		}
 
 		return data;
