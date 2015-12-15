@@ -58,21 +58,24 @@ public class HCOHCPService {
 				return count;
 			}
 			String line = null;
-
 			while ((line = in.readLine()) != null) {
 				String fields[] = line.split(",");
-				if (fields.length > 26) {
-					hcohcp a = new hcohcp(fields[2], fields[3], fields[4], fields[6], fields[8], fields[17], fields[21],
-							fields[22], fields[24], fields[25], fields[26]);
-					Element data = new Element(fields[2], a);
+
+				if (fields.length >= 11) {
+//					hcohcp a = new hcohcp(fields[0], fields[4], fields[3], fields[6], fields[8], fields[17], fields[21],
+	//						fields[22], fields[24], fields[25], fields[26]);
+
+					hcohcp a = new hcohcp(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], fields[6],
+							fields[7], fields[8], fields[9], fields[10]);
+
+					Element data = new Element(fields[1], a);
 					count++;
 					hccache.put(data);
-				}
 
+				}
 			}
 			LOG.info("Completed loading data from file " + filename + "to Cache " + hccache.getName() + " Loaded "
 					+ count + " elements");
-
 			in.close();
 
 		} catch (Exception ex) {
@@ -123,7 +126,7 @@ public class HCOHCPService {
 			}
 		}
 
-		if (   (address!= null)  && ( address.length() > 0)){
+		if ((address != null) && (address.length() > 0)) {
 			if (first) {
 				query += "where ( ";
 				first = false;
@@ -133,7 +136,7 @@ public class HCOHCPService {
 			}
 		}
 
-		if  (   (state!= null)  && ( state.length() > 0))  {
+		if ((state != null) && (state.length() > 0)) {
 			if (first) {
 				query += "where (";
 				first = false;
@@ -143,7 +146,7 @@ public class HCOHCPService {
 			}
 		}
 
-		if  (   (zip!= null)  && ( zip.length() > 0)) {
+		if ((zip != null) && (zip.length() > 0)) {
 			if (first) {
 				query += "where (";
 				first = false;
@@ -153,7 +156,7 @@ public class HCOHCPService {
 			}
 		}
 
-		if  (   (city!= null)  && ( city.length() > 0)) {
+		if ((city != null) && (city.length() > 0)) {
 			if (first) {
 				query += "where ( ";
 				first = false;
@@ -163,7 +166,7 @@ public class HCOHCPService {
 			}
 		}
 
-		if  (   (speciality!= null)  && ( speciality.length() > 0)) {
+		if ((speciality != null) && (speciality.length() > 0)) {
 			if (first) {
 				query += "where ( ";
 				first = false;
@@ -177,16 +180,17 @@ public class HCOHCPService {
 			query += " limit 30";
 		else
 			query += " ) limit 30";
-			
-		
+
 		LOG.info("Executing BigMemory Query = " + query);
-		
+
 		Query hcoQuery = queryManager.createQuery(query);
 		Results results = hcoQuery.end().execute();
-	
+
 		for (Result result : results.all()) {
 			hcohcp hs = (hcohcp) result.getValue();
-			JSONHCOHCP dhs = new JSONHCOHCP(hs.getProfessionalEnrollmentID(), hs.getDisplayName(), hs.getPrimarySpeciality(), hs.getOrganization(), hs.getAddress1(), hs.getCity(), hs.getState(), hs.getZipcode());
+			JSONHCOHCP dhs = new JSONHCOHCP(hs.getProfessionalEnrollmentID(), hs.getDisplayName(),
+					hs.getPrimarySpeciality(), hs.getOrganization(), hs.getAddress1(), hs.getCity(), hs.getState(),
+					hs.getZipcode());
 			data.add(dhs);
 		}
 

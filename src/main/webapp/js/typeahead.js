@@ -8,6 +8,11 @@ $(function() {
 		$("<div>").text(message).prependTo("#log");
 		$("#log").scrollTop(0);
 	}
+	
+	function baseUrl() {
+		   var href = window.location.href.split('/');
+		   return href[0]+'//'+href[2]+'/';
+		}
 
 	$("#name")
 	.autocomplete(
@@ -16,7 +21,7 @@ $(function() {
 					var param = 'pattern=' + request;
 					$
 					.ajax({
-						url : "http://localhost:8080/typeahead/search/services/bigmemory/getHCPNames",
+						url : baseUrl()+"typeahead/search/services/bigmemory/getHCPNames",
 						dataType : "json",
 						data : {
 							pattern : request.term
@@ -46,9 +51,13 @@ $(function() {
 				}
 			});
 
+	
+	
+	
+	
 	function gridinit() {
 		// alert(JSON.stringify(gdata));
-		var iurl = "http://localhost:8080/typeahead/search/services/bigmemory/searchHCO?name=doesnotexist";
+		var iurl = baseUrl()+"typeahead/search/services/bigmemory/searchHCO?name=doesnotexist";
 		
 			$("#jqGrid").jqGrid(
 					{
@@ -69,7 +78,7 @@ $(function() {
 								return obj.length;
 							}
 						},
-						colNames : [ 'PID', 'Name', 'Speciality', 'Organization',
+						colNames : [ 'NPI ID', 'Name', 'Speciality', 'Organization',
 						             'Address', 'City', 'State', 'Zip' ],
 						             colModel : [ {
 						            	 name : 'professionalEnrollmentID'
@@ -120,7 +129,7 @@ $(function() {
 				var state = $('#state').val();
 				var zipcode = $('#zipcode').val();
 
-				var iurl = "http://localhost:8080/typeahead/search/services/bigmemory/searchHCO?name="
+				var iurl = baseUrl()+"typeahead/search/services/bigmemory/searchHCO?name="
 					+ name
 					+ "&speciality="
 					+ speciality
