@@ -141,17 +141,24 @@ public class InMemorySearchService {
     @GET
     @Path("/{cache}/bulkload")
     public String handleBulkLoad(@PathParam("cache") 
-    		String cacheName,@QueryParam("filename") String filename) throws Exception {
+    		String cacheName,@QueryParam("filename") String filename,@QueryParam("batchsize") int batchsize,@QueryParam("threads") int numthreads) throws Exception {
     	int count=0;
     	Cache cache = cacheManager.getCache(cacheName);
     	if (cache == null){
     		LOG.error("Unable to get create cache " + cacheName);
     		return "{\"Result\":\"Error Creating cache }"+cacheName+ "\"";
     	}
+    	if (batchsize == 0){
+    		batchsize = 100000;
+    	}
+    	if (numthreads == 0){
+    		numthreads = 5;
+    	}
+    	
     	cache.setNodeBulkLoadEnabled(true);
     	if (cacheName.equals("hccache")){
     		HCOHCPService aservice = new HCOHCPService(cache);
-    		count=aservice.load(filename);
+    		count=aservice.load(filename,batchsize,numthreads);
     		
     	}
 

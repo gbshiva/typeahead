@@ -27,6 +27,8 @@ import net.sf.ehcache.search.query.QueryManagerBuilder;
 
 import com.sag.bigmemory.InMemorySearchService;
 import com.sag.bigmemory.domain.*;
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +40,7 @@ public class HCOHCPService {
 		this.hccache = c;
 	}
 
-	public int load(String filename) {
+	public int load(String filename, int batchsize, int numthreads) {
 		int count = 0;
 
 		try {
@@ -58,19 +60,42 @@ public class HCOHCPService {
 				return count;
 			}
 			String line = null;
+			int batchcount = 0;
+			List inputdata = new ArrayList();
+			
 			while ((line = in.readLine()) != null) {
-				String fields[] = line.split(",");
+				String fields[] = line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
 
 				if (fields.length >= 11) {
-//					hcohcp a = new hcohcp(fields[0], fields[4], fields[3], fields[6], fields[8], fields[17], fields[21],
-	//						fields[22], fields[24], fields[25], fields[26]);
+					// hcohcp a = new hcohcp(fields[0], fields[4], fields[3],
+					// fields[6], fields[8], fields[17], fields[21],
+					// fields[22], fields[24], fields[25], fields[26]);
 
 					hcohcp a = new hcohcp(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], fields[6],
 							fields[7], fields[8], fields[9], fields[10]);
 
-					Element data = new Element(fields[1], a);
+					Element data = new Element(fields[0], a);
 					count++;
-					hccache.put(data);
+					inputdata.add(data);
+					batchcount++;
+					if (batchcount >= batchsize) {
+						// hccache.put(data);
+
+						int eachThreadCount = batchcount / numthreads;
+						ExecutorService executor = Executors.newFixedThreadPool(numthreads);
+						for (int i = 0; i < numthreads; i++) {
+							List sublist = sublist(inputdata, i * eachThreadCount, (i + 1) * eachThreadCount);
+							Runnable worker = new Cacheput(hccache, sublist);
+							executor.execute(worker);
+						}
+						executor.shutdown();
+						while (!executor.isTerminated()) {
+							Thread.sleep(50L);
+						}
+						batchcount=0;
+						inputdata.clear();
+					}
+					
 
 				}
 			}
@@ -83,6 +108,23 @@ public class HCOHCPService {
 			ex.printStackTrace();
 		}
 		return count;
+	}
+
+	public class Cacheput implements Runnable {
+		private List keys;
+		private Cache cache;
+
+		public Cacheput(Cache cache, List keys) {
+			this.cache = cache;
+			this.keys = keys;
+		}
+
+		public void run() {
+			for (int i = 0; i < this.keys.size(); i++) {
+				cache.put((Element) this.keys.get(i));
+
+			}
+		}
 	}
 
 	public String[] getHCPNames(String pattern) {
@@ -196,6 +238,15 @@ public class HCOHCPService {
 
 		return data;
 
+	}
+
+	public static List sublist(List s, int strindex, int endindex) {
+		ArrayList sub = new ArrayList();
+		for (int i = 0; i < endindex - strindex; i++) {
+			sub.add(s.get(strindex + i));
+		}
+
+		return sub;
 	}
 
 }
