@@ -82,15 +82,18 @@ public class InMemorySearchService {
     
     @GET
     @Path("/getHCPNames")
-    public String getHCPNames(@QueryParam("pattern") String pattern)  throws Exception {
+    public String getHCPNames(@QueryParam("pattern") String pattern,@QueryParam("numrows") int numrows)  throws Exception {
     	String cacheName="hccache";
     	Cache cache = cacheManager.getCache(cacheName);
     	if (cache == null){
     		LOG.error("Unable to get create cache " + cacheName);
     		return "{\"Result\":\"Error Creating cache }"+cacheName+ "\"";
     	}
+    	if ( numrows == 0 ){
+    		numrows=20;
+    	}
     	HCOHCPService aservice = new HCOHCPService(cache);
-    	return mapper.writeValueAsString(aservice.getHCPNames(pattern));
+    	return mapper.writeValueAsString(aservice.getHCPNames(pattern,numrows));
     	
     }
     
@@ -102,15 +105,18 @@ public class InMemorySearchService {
     }
     @GET
     @Path("/searchHCO")
-    public String searchHCPNames(@QueryParam("name") String name, @QueryParam("speciality") String speciality, @QueryParam("address") String address, @QueryParam("city") String city, @QueryParam("state") String state, @QueryParam("zip") String zip)  throws Exception {
+    public String searchHCPNames(@QueryParam("name") String name, @QueryParam("speciality") String speciality, @QueryParam("address") String address, @QueryParam("city") String city, @QueryParam("state") String state, @QueryParam("zip") String zip , @QueryParam("numrows") int numrows)  throws Exception {
     	String cacheName="hccache";
     	Cache cache = cacheManager.getCache(cacheName);
     	if (cache == null){
     		LOG.error("Unable to get create cache " + cacheName);
     		return "{\"Result\":\"Error Creating cache }"+cacheName+ "\"";
     	}
+    	if ( numrows == 0 ){
+    		numrows=100;
+    	}
     	HCOHCPService aservice = new HCOHCPService(cache);
-    	return mapper.writeValueAsString(aservice.searchHCP(name,speciality,address,city,state,zip));
+    	return mapper.writeValueAsString(aservice.searchHCP(name,speciality,address,city,state,zip,numrows));
     	
     	
     }

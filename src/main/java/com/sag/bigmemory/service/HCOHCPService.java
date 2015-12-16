@@ -127,7 +127,7 @@ public class HCOHCPService {
 		}
 	}
 
-	public String[] getHCPNames(String pattern) {
+	public String[] getHCPNames(String pattern,int numrows) {
 
 		String[] names = new String[10];
 		Attribute<String> name = hccache.getSearchAttribute("name");
@@ -135,7 +135,7 @@ public class HCOHCPService {
 		QueryManager queryManager = QueryManagerBuilder.newQueryManagerBuilder().addCache(hccache).build();
 
 		Query assetQuery = queryManager
-				.createQuery("select name from hccache where ( name like '" + pattern + "%') limit 10");
+				.createQuery("select name from hccache where ( name like '" + pattern + "%') limit "+numrows);
 
 		Results results = assetQuery.end().execute();
 		int i = 0;
@@ -150,7 +150,7 @@ public class HCOHCPService {
 
 	}
 
-	public List searchHCP(String name, String speciality, String address, String city, String state, String zip) {
+	public List searchHCP(String name, String speciality, String address, String city, String state, String zip,int numrows) {
 
 		List data = new ArrayList();
 		QueryManager queryManager = QueryManagerBuilder.newQueryManagerBuilder().addCache(hccache).build();
@@ -219,9 +219,9 @@ public class HCOHCPService {
 		}
 
 		if (first)
-			query += " limit 30";
+			query += " limit "+ numrows;
 		else
-			query += " ) limit 30";
+			query += " ) limit "+ numrows;
 
 		LOG.info("Executing BigMemory Query = " + query);
 
