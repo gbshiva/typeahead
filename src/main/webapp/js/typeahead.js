@@ -99,7 +99,7 @@ $(function() {
 						            	 name : 'zipcode'
 						             } ],
 						             rowNum : 50,
-						             pager : "#pager",
+						             pager : "#jqGridPager",
 						             rowList : [ 10, 50, 100 ],
 						             gridview : true,
 						             viewrecords : true,
