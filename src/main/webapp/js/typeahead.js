@@ -98,9 +98,9 @@ $(function() {
 						             }, {
 						            	 name : 'zipcode'
 						             } ],
-						             rowNum : 20,
+						             rowNum : 50,
 						             pager : "#pager",
-						             rowList : [ 10, 20, 30 ],
+						             rowList : [ 10, 50, 100 ],
 						             gridview : true,
 						             viewrecords : true,
 						             loadError : function(xhr, st, err) {
