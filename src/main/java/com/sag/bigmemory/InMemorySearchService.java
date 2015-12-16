@@ -90,7 +90,7 @@ public class InMemorySearchService {
     		return "{\"Result\":\"Error Creating cache }"+cacheName+ "\"";
     	}
     	if ( numrows == 0 ){
-    		numrows=20;
+    		numrows=10;
     	}
     	HCOHCPService aservice = new HCOHCPService(cache);
     	return mapper.writeValueAsString(aservice.getHCPNames(pattern,numrows));
@@ -147,7 +147,7 @@ public class InMemorySearchService {
     @GET
     @Path("/{cache}/bulkload")
     public String handleBulkLoad(@PathParam("cache") 
-    		String cacheName,@QueryParam("filename") String filename,@QueryParam("batchsize") int batchsize,@QueryParam("threads") int numthreads) throws Exception {
+    		String cacheName,@QueryParam("filename") String filename,@QueryParam("batchsize") int batchsize,@QueryParam("threads") int numthreads, @QueryParam("totalrows") int totalrows) throws Exception {
     	int count=0;
     	Cache cache = cacheManager.getCache(cacheName);
     	if (cache == null){
@@ -164,7 +164,7 @@ public class InMemorySearchService {
     	cache.setNodeBulkLoadEnabled(true);
     	if (cacheName.equals("hccache")){
     		HCOHCPService aservice = new HCOHCPService(cache);
-    		count=aservice.load(filename,batchsize,numthreads);
+    		count=aservice.load(filename,batchsize,numthreads,totalrows);
     		
     	}
 

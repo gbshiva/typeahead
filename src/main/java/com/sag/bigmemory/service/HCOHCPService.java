@@ -40,11 +40,10 @@ public class HCOHCPService {
 		this.hccache = c;
 	}
 
-	public int load(String filename, int batchsize, int numthreads) {
+	public int load(String filename, int batchsize, int numthreads, int totalrecords) {
 		int count = 0;
-
+		boolean checktotal = false;
 		try {
-
 			InputStream is = getClass().getClassLoader().getResourceAsStream(filename);
 			if (is == null) {
 				LOG.error("Unable to find file");
@@ -60,10 +59,14 @@ public class HCOHCPService {
 				return count;
 			}
 			String line = null;
+			if (totalrecords > 0) checktotal=true;
+			int totalcount = 0;
 			int batchcount = 0;
 			List inputdata = new ArrayList();
 			
-			while ((line = in.readLine()) != null) {
+			while (((line = in.readLine()) != null) ) {
+				if ( (checktotal) && (totalcount > totalrecords) ) break;
+				totalcount++;
 				String fields[] = line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
 
 				if (fields.length >= 11) {
@@ -100,7 +103,7 @@ public class HCOHCPService {
 				}
 			}
 			LOG.info("Completed loading data from file " + filename + "to Cache " + hccache.getName() + " Loaded "
-					+ count + " elements");
+					+ totalcount + " elements");
 			in.close();
 
 		} catch (Exception ex) {
@@ -129,7 +132,7 @@ public class HCOHCPService {
 
 	public String[] getHCPNames(String pattern,int numrows) {
 
-		String[] names = new String[10];
+		String[] names = new String[numrows];
 		Attribute<String> name = hccache.getSearchAttribute("name");
 
 		QueryManager queryManager = QueryManagerBuilder.newQueryManagerBuilder().addCache(hccache).build();
