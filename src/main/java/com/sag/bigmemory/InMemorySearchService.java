@@ -37,6 +37,7 @@ import org.terracotta.toolkit.ToolkitFactory;
 import org.terracotta.toolkit.concurrent.atomic.ToolkitAtomicLong;
 
 import com.sag.bigmemory.domain.cacheKeyValue;
+import com.sag.bigmemory.service.ElasticSearchService;
 import com.sag.bigmemory.service.HCOHCPService;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
@@ -55,11 +56,6 @@ import javax.ws.rs.core.MultivaluedMap;
         
 *)
 */
-
-
-
-
-
 
 
 @Path("/bigmemory/")
@@ -147,7 +143,7 @@ public class InMemorySearchService {
     @GET
     @Path("/{cache}/bulkload")
     public String handleBulkLoad(@PathParam("cache") 
-    		String cacheName,@QueryParam("filename") String filename,@QueryParam("batchsize") int batchsize,@QueryParam("threads") int numthreads, @QueryParam("totalrows") int totalrows) throws Exception {
+    		String cacheName,@QueryParam("filename") String filename,@QueryParam("batchsize") int batchsize,@QueryParam("threads") int numthreads, @QueryParam("totalrows") int totalrows, @QueryParam("elasticsearch") int elasticsearch) throws Exception {
     	int count=0;
     	Cache cache = cacheManager.getCache(cacheName);
     	if (cache == null){
@@ -161,13 +157,21 @@ public class InMemorySearchService {
     		numthreads = 5;
     	}
     	
+    	
     	cache.setNodeBulkLoadEnabled(true);
-    	if (cacheName.equals("hccache")){
-    		HCOHCPService aservice = new HCOHCPService(cache);
-    		count=aservice.load(filename,batchsize,numthreads,totalrows);
+    	//if (cacheName.equals("hccache")){
+    		//HCOHCPService aservice = new HCOHCPService(cache);
+    		//count=aservice.load(filename,batchsize,numthreads,totalrows);
     		
-    	}
+    //	}
 
+    	if (elasticsearch == 1){
+    		
+    		ElasticSearchService svc = new ElasticSearchService();
+    		svc.load(filename, batchsize, numthreads, totalrows);
+    	}
+    		
+    		
     	cache.setNodeBulkLoadEnabled(false);
     	return "{\"Result\":\"Bulk Load Success. Loaded " + count +" entries\"}";
     }
