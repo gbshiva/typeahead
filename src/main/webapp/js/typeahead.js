@@ -13,6 +13,50 @@ $(function() {
 		   var href = window.location.href.split('/');
 		   return href[0]+'//'+href[2]+'/';
 		}
+	
+	
+	$("#fuzzyname")
+	.autocomplete(
+			{
+				source : function(request, response) {
+					var param = 'pattern=' + request;
+					$
+					.ajax({
+						url : baseUrl()+"typeahead/search/services/bigmemory/getHCPNamesFuzzy",
+						dataType : "json",
+						data : {
+							pattern : request.term
+						},
+						success : function(data) {
+							response(data);
+						},
+						error : function(data) {
+							// alert(data)
+							response(" ");
+						}
+					});
+				},
+				minLength : 2,
+				select : function(event, ui) {
+					log(ui.item ? "Selected: " + ui.item.label
+							: "Nothing selected, input was "
+								+ this.value);
+				},
+				open : function() {
+					$(this).removeClass("ui-corner-all").addClass(
+					"ui-corner-top");
+				},
+				close : function() {
+					$(this).removeClass("ui-corner-top").addClass(
+					"ui-corner-all");
+				}
+			});
+	
+	
+	
+	
+	
+	
 
 	$("#name")
 	.autocomplete(

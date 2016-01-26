@@ -30,6 +30,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -58,25 +59,42 @@ public class ElasticSearchService {
 			if (totalrecords > 0) checktotal=true;
 			int totalcount = 0;
 			Client client = ElasticSearchHelper.getElasticClient();
+			BulkRequestBuilder bulkRequest = client.prepareBulk();
+			
 			while (((line = in.readLine()) != null) ) {
 				if ( (checktotal) && (totalcount > totalrecords) ) break;
-				totalcount++;
 				String fields[] = line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
 
 				if (fields.length >= 11) {
 
-					IndexResponse response = client.prepareIndex("twitter", "tweet", "1")
+					bulkRequest.add(client.prepareIndex("genentech", "hcohcp", fields[0])
 					        .setSource(jsonBuilder()
 					                    .startObject()
-					                    .field("hcohcpname", fields[1]+fields[2] )
+					                    .field("hcohcpname", fields[1]+" "+fields[2])
 								        .field("npiid",fields[0] )
 					                    .endObject()
 					                  )
-					        .get();
-
+					        );
+					
+					
+				}
+				
+				if ( count >= batchsize){
+					BulkResponse bulkResponse = bulkRequest.get();
+					if (bulkResponse.hasFailures()) {
+						LOG.error("Error Bulk Request to Elastic search");
+						break;
+					}
+					bulkRequest = client.prepareBulk();
+					count=0;
+					
+				}else{
+					
 					count++;
 
 				}
+				totalcount++;
+
 			}
 			LOG.info("Completed loading data from file " + filename + "to Elastic Search  Loaded "
 					+ totalcount + " elements");
@@ -89,7 +107,31 @@ public class ElasticSearchService {
 		return count;
 	}
 
-	
+	public String[] getHCPNamesFuzzySearch(String pattern,int numrows) {
+
+	//	String[] names = new String[numrows];
+		
+		
+		SearchResponse response = ElasticSearchHelper.getElasticClient().prepareSearch()
+//                        .setQuery(QueryBuilders.wildcardQuery("hcohcpname", "john*")) // Query
+				.setQuery(QueryBuilders.fuzzyQuery("hcohcpname", pattern))
+                      .setFrom(0).setSize(numrows).setExplain(false)
+				.execute().actionGet();
+
+		SearchHit[] results = response.getHits().getHits();
+		int index=0;
+		String[] names = new String[results.length];
+		for (SearchHit hit : results) {
+			Map<String, Object> result = hit.getSource();
+			names[index]= (String) result.get("hcohcpname");
+			index++;
+		}
+		
+		
+		
+		return names;
+
+	}
 	
 	
 }

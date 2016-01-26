@@ -28,12 +28,14 @@ public class ElasticSearchHelper {
     private static Client client;
 	
     private static void init(){
+    	elastichome="/Users/sgokaram/Documents/Client-POCs/Gennentech/POC/elasticsearch-2.1.0";
+    	clustername="genentech_cluster_dev";
     	Node node = nodeBuilder().clusterName(clustername)
 				.settings(Settings.settingsBuilder().put("http.enabled", false))
 			.settings(Settings.settingsBuilder().put("path.home", elastichome)).client(true).node();
 
 			
-			Client client = node.client();
+			client = node.client();
     }
     
     public static Client getElasticClient(){

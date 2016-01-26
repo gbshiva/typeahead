@@ -94,6 +94,22 @@ public class InMemorySearchService {
     }
     
     @GET
+    @Path("/getHCPNamesFuzzy")
+    public String getHCPNamesFuzzy(@QueryParam("pattern") String pattern,@QueryParam("numrows") int numrows)  throws Exception {
+    	if ( numrows == 0 ){
+    		numrows=10;
+    	}
+		ElasticSearchService svc = new ElasticSearchService();
+    	return mapper.writeValueAsString(svc.getHCPNamesFuzzySearch(pattern, numrows));
+    	
+    }
+    
+    
+    
+    
+    
+    
+    @GET
     @Path("/searchHCO1")
     public String searchHCPNames1(@QueryParam("name") String name, @QueryParam("speciality") String speciality, @QueryParam("address") String address, @QueryParam("city") String city, @QueryParam("state") String state, @QueryParam("zip") String zip)  throws Exception {
     	return "[{\"professionalEnrollmentID\":\"I20110506000477\",\"displayName\":\"MARGOLIES RICHARD \",\"primarySpeciality\":\"\",\"organization\":\"RICHARD P MARGOLIES PA\",\"address1\":\"3355 BURNS RD\",\"city\":\"PALM BEACH GARDENS\",\"state\":\"FL\",\"zipcode\":\"334104356\"}]";
@@ -159,11 +175,11 @@ public class InMemorySearchService {
     	
     	
     	cache.setNodeBulkLoadEnabled(true);
-    	//if (cacheName.equals("hccache")){
-    		//HCOHCPService aservice = new HCOHCPService(cache);
-    		//count=aservice.load(filename,batchsize,numthreads,totalrows);
+    	if (cacheName.equals("hccache")){
+    		HCOHCPService aservice = new HCOHCPService(cache);
+    		count=aservice.load(filename,batchsize,numthreads,totalrows);
     		
-    //	}
+    	}
 
     	if (elasticsearch == 1){
     		

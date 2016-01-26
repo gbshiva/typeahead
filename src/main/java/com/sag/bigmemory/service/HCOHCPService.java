@@ -130,9 +130,10 @@ public class HCOHCPService {
 		}
 	}
 
+	
 	public String[] getHCPNames(String pattern,int numrows) {
 
-		String[] names = new String[numrows];
+		//String[] names = new String[numrows];
 		Attribute<String> name = hccache.getSearchAttribute("name");
 
 		QueryManager queryManager = QueryManagerBuilder.newQueryManagerBuilder().addCache(hccache).build();
@@ -142,6 +143,7 @@ public class HCOHCPService {
 
 		Results results = assetQuery.end().execute();
 		int i = 0;
+		String[] names = new String[results.size()];
 		for (Result result : results.all()) {
 
 			names[i] = (String) result.getAttribute(name);

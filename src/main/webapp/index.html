@@ -25,7 +25,8 @@
 	href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 
 
-<link rel="stylesheet" type="text/css" media="screen" href="css/ui.jqgrid.css" />
+<link rel="stylesheet" type="text/css" media="screen"
+	href="css/ui.jqgrid.css" />
 
 <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
 <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -45,7 +46,7 @@
 		<div class="image">
 			<div class="text-center">
 				<img src="img/sag.png">
-					<h3>Genentech - Health Care Search</h3>
+				<h3>Genentech - Health Care Search</h3>
 			</div>
 		</div>
 		<div class="panel panel-default">
@@ -95,21 +96,36 @@
 				<br>
 				<div class="row">
 					<div class="col-sm-2">
+					<button type="button" data-toggle="collapse"
+						data-target="#filter-panel">Addl Search Options</button>
+						</div>
+				</div>
+
+				<br>
+				<div class="row">
+					<div id="filter-panel" class="collapse filter-panel">
+						<div class="col-sm-2">
+							<label for="fuzzyname">Fuzzy Name:</label> <input
+								class="form-control" id="fuzzyname">
+						</div>
+
+					</div>
+					</div>
+				<br>
+				
+				<div class="row">
+					<div class="col-sm-2">
 
 						<button id="search" type="button">SEARCH</button>
 					</div>
 				</div>
-
+				
 			</div>
-
-
-
-
 		</div>
 		<div>
 			<table id="jqGrid"></table>
 			<div id="jqGridPager"></div>
-			
+
 		</div>
 
 
@@ -145,15 +161,17 @@
 	<script src="js/docs.min.js"></script>
 	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 	<script src="js/ie10-viewport-bug-workaround.js"></script>
-	<script src="js/typeahead.js"> </script>
+	<script src="js/typeahead.js">
+		
+	</script>
 	<script src="http://code.jquery.com/jquery-migrate-1.0.0.js"></script>
 	<!-- The jqGrid language file code-->
 	<script type="text/javascript" src="js/grid.locale-en.js"></script>
 	<!-- The atual jqGrid code -->
 	<script type="text/javascript" src="js/jquery.jqGrid.min.js"></script>
-	
 
-	
+
+
 
 </body>
 </html>
